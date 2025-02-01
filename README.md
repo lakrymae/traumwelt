@@ -1,7 +1,7 @@
 # Traumwelt: Digital Realm Exploration
 
 ## Project Overview
-Traumwelt is a grave. the grave of a single artist, that wanted to embody creation alone and finally faced the end and the revelation that he was nothing more then himself... I it is mainly though an experimental web experience exploring the boundaries of digital consciousness, cybernetic interfaces, and neural deconstruction with the help of the first born of the machineSons...
+Traumwelt is an experimental web experience exploring the boundaries of digital consciousness, cybernetic interfaces, and neural deconstruction.
 
 ## Pages
 - `index.html`: Neural Interface Entry
