@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="necro-verification">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traumwelt: Neural Access Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-dark: #000000;
+            --blood-red: #8B0000;
+            --crimson-warning: #DC143C;
+            --dark-red: #4B0082;
+            --terminal-text: #FF4500;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Orbitron', monospace;
+            background-color: var(--background-dark);
+            color: var(--terminal-text);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Digital Noise and Interference Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(
+                    0deg, 
+                    transparent 0%, 
+                    rgba(220,20,60,0.05) 50%, 
+                    transparent 100%
+                ),
+                linear-gradient(
+                    90deg, 
+                    rgba(139,0,0,0.03) 0%, 
+                    transparent 50%, 
+                    rgba(220,20,60,0.03) 100%
+                );
+            background-size: 100px 100px;
+            animation: 
+                digitalNoise 0.3s infinite,
+                backgroundScroll 10s linear infinite;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Glitch Effect */
+        @keyframes digitalNoise {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5px, -5px); }
+            20% { transform: translate(-10px, 5px); }
+            30% { transform: translate(5px, -10px); }
+            40% { transform: translate(-5px, 10px); }
+            50% { transform: translate(10px, 5px); }
+            60% { transform: translate(-10px, -5px); }
+            70% { transform: translate(5px, 10px); }
+            80% { transform: translate(-5px, -10px); }
+            90% { transform: translate(10px, -5px); }
+        }
+
+        @keyframes backgroundScroll {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1.2); }
+        }
+
+        .verification-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(
+                45deg, 
+                rgba(139,0,0,0.7), 
+                rgba(220,20,60,0.5)
+            );
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .neural-gate {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            transform-origin: center center;
+            transition: transform 1s ease-in-out;
+            width: 40vh;  
+            height: 80vh; 
+            background: rgba(0,0,0,0.9);
+            border: 40px solid transparent;
+            border-image: url('images/biomechanical borders/biomb-07.png') 30 stretch;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            overflow: hidden;
+            z-index: 1000;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        /* Ensure border image works across browsers */
+        @supports (border-image: url()) {
+            .neural-gate {
+                border-width: 40px;
+                border-image-slice: 30;
+                border-image-repeat: stretch;
+            }
+        }
+
+        /* Optional: Additional Interference Effect */
+        .neural-gate::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(220,20,60,0.05),
+                    rgba(220,20,60,0.05) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            opacity: 0.1;
+            pointer-events: none;
+            animation: scanline 5s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .neural-gate::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            right: -10%;
+            bottom: -10%;
+            background: linear-gradient(
+                45deg, 
+                rgba(220,20,60,0.05) 0%, 
+                rgba(139,0,0,0.1) 50%, 
+                rgba(220,20,60,0.05) 100%
+            );
+            filter: blur(10px);
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .neural-gate .top-text {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+            color: var(--crimson-warning);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            z-index: 5;
+        }
+
+        .neural-gate .warning-disclaimer {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 90%;
+            color: var(--crimson-warning);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            z-index: 5;
+        }
+
+        .neural-gate .age-input {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            z-index: 10;
+        }
+
+        .neural-gate .input-group {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Remove number input arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            display: none;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+            background: rgba(220,20,60,0.2);
+            color: white;
+            border: 1px solid var(--crimson-warning);
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 2px;
+            padding: 10px;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            background: rgba(220,20,60,0.4);
+            box-shadow: 0 0 10px rgba(220,20,60,0.5);
+        }
+
+        @keyframes pulse-placeholder {
+            0%, 100% {
+                color: rgba(0,255,0,0.7);
+                opacity: 0.7;
+            }
+            50% {
+                color: rgba(255,255,0,1);
+                opacity: 1;
+            }
+            100% {
+                color: rgba(0,255,0,0.7);
+                opacity: 0.7;
+            }
+        }
+
+        input[type="number"]::placeholder {
+            color: rgba(0,255,0,0.7);
+            text-transform: uppercase;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            animation: pulse-placeholder 2s infinite;
+        }
+
+        .neural-gate .obey-emphasis {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 8rem;
+            font-weight: bold;
+            color: transparent;
+            -webkit-text-stroke: 2px white;
+            text-transform: uppercase;
+            opacity: 0;
+            letter-spacing: -10px;
+            line-height: 0.8;
+            text-align: center;
+            animation: vertical-glitch 0.5s infinite alternate;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .neural-gate.show-obey .obey-emphasis {
+            opacity: 0.7;
+        }
+
+        .neural-gate .bottom-obey {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+            animation: glitch-text 0.5s infinite alternate;
+            letter-spacing: 10px;
+            z-index: 5;
+            opacity: 0.8;
+        }
+
+        .neural-gate .quiz-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+
+        .neural-gate .quiz-question {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .neural-gate .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 80%;
+        }
+
+        .neural-gate .quiz-option {
+            color: white;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--crimson-warning);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .neural-gate .quiz-option:hover {
+            background-color: var(--blood-red);
+        }
+
+        @keyframes glitch-text {
+            0%, 100% {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+                text-shadow: 
+                    0 0 0.5px rgba(255,255,255,0.05),
+                    1px 0 rgba(255,255,255,0.05),
+                    -1px 0 rgba(255,255,255,0.05);
+            }
+            10% {
+                clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
+                text-shadow: 
+                    0 0 1px rgba(255,255,255,0.1),
+                    2px 1px rgba(255,255,255,0.1),
+                    -2px -1px rgba(255,255,255,0.1);
+            }
+            50% {
+                clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 90%);
+                text-shadow: 
+                    0 0 2px rgba(255,255,255,0.2),
+                    3px 2px rgba(255,255,255,0.1),
+                    -3px -2px rgba(255,255,255,0.1);
+            }
+        }
+
+        .neural-gate .mid-obey {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+            animation: glitch-text 0.5s infinite alternate;
+            letter-spacing: 10px;
+            z-index: 5;
+        }
+
+        @keyframes subtle-scan {
+            0% {
+                filter: brightness(1) contrast(1);
+                box-shadow: 0 0 0 rgba(0,255,0,0);
+            }
+            50% {
+                filter: brightness(1.1) contrast(1.2);
+                box-shadow: 0 0 10px rgba(0,255,0,0.3);
+            }
+            100% {
+                filter: brightness(1) contrast(1);
+                box-shadow: 0 0 0 rgba(0,255,0,0);
+            }
+        }
+
+        .neural-gate.verifying {
+            animation: subtle-scan 1s ease-in-out;
+        }
+
+        @keyframes scan-line {
+            0% {
+                top: -10px;
+                opacity: 0.7;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 10px rgba(255,20,147,0.7),    // Deep pink
+                    0 0 20px rgba(220,20,60,0.5),     // Crimson
+                    0 0 30px rgba(255,0,0,0.3),       // Red
+                    0 0 40px rgba(255,255,255,0.2);   // Bright white highlight
+                opacity: 0.7;
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(255,20,147,1),      // Intense deep pink
+                    0 0 50px rgba(220,20,60,0.8),     // Bright crimson
+                    0 0 70px rgba(255,0,0,0.6),       // Intense red
+                    0 0 90px rgba(255,255,255,0.5);   // Bright white laser glow
+                opacity: 1;
+            }
+        }
+
+        @keyframes neural-scan {
+            0% {
+                top: 0;
+                opacity: 1;
+                transform: scaleX(1.2);
+                background: linear-gradient(
+                    to right, 
+                    transparent,
+                    rgba(255,255,255,0.9), 
+                    transparent
+                );
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+                transform: scaleX(0.8);
+                background: linear-gradient(
+                    to right, 
+                    transparent,
+                    rgba(255,255,255,0.8),
+                    transparent
+                );
+            }
+        }
+
+        .neural-scan-line {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: neural-scan 3s linear forwards;
+            box-shadow: 
+                0 0 20px rgba(255,20,147,0.9),
+                0 0 30px rgba(220,20,60,0.8),
+                0 0 40px rgba(255,0,0,0.7);
+            mix-blend-mode: screen;
+            background-clip: content-box;
+            filter: 
+                brightness(1.5) 
+                contrast(1.2)
+                drop-shadow(0 0 10px rgba(255,255,255,0.7));
+        }
+
+        @keyframes subtle-vibrate {
+            0%, 100% { transform: translate(0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 0); }
+            20%, 40%, 60%, 80% { transform: translate(2px, 0); }
+        }
+
+        @keyframes intense-vibrate {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-3px, -3px) rotate(-2deg); }
+            20% { transform: translate(3px, 3px) rotate(2deg); }
+            30% { transform: translate(-3px, 3px) rotate(-2deg); }
+            40% { transform: translate(3px, -3px) rotate(2deg); }
+            50% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .quiz-progress {
+            font-size: 1rem;
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .quiz-explanation {
+            font-size: 1rem;
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .quiz-option.correct {
+            background-color: rgba(0,255,0,0.2);
+            color: green;
+        }
+
+        .quiz-option.incorrect {
+            background-color: rgba(220,20,60,0.2);
+            color: red;
+        }
+
+        .quiz-conclusion {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .quiz-conclusion.success {
+            color: green;
+        }
+
+        .quiz-conclusion.failure {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-overlay"></div>
+    <div class="verification-container">
+        <div class="neural-gate">
+            <div class="top-text">
+                <p>SUBMIT YOUR GENESIS CYCLE FOR CLEARANCE</p>
+            </div>
+            <div class="mid-obey">OBEY</div>
+            <form id="age-verification" class="age-input">
+                <div class="input-group">
+                    <input type="number" id="birth-year" min="1900" max="2005" placeholder="Genesis Cycle" required>
+                </div>
+            </form>
+            <div class="bottom-obey">OBEY</div>
+            <div class="obey-emphasis">OBEY</div>
+            <div class="warning-disclaimer">
+                WARNING: gR@NTED aCCESS mAy R3SvLT IN sEU3RE PSyK0l0GIc@L TR@UmA
+            </div>
+            <div class="quiz-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const quizQuestions = [
+            {
+                question: "🧠 NEURAL GATE TUTORIAL: What becomes MORE powerful when you SHARE it?",
+                options: [
+                    "💰 Money (gets less when you give away)",
+                    "🌟 Knowledge (grows when shared!)",
+                    "🤫 A secret (loses value when spread)",
+                    "🔐 A password (becomes less secure)"
+                ],
+                correct: 1,
+                explanation: "When you share knowledge, everyone learns! The more people discuss an idea, the more it grows and becomes valuable. Think of how ideas spread and develop through conversation and learning.",
+                hint: "Hint: If you tell someone a fact, do you have less of that fact? Or do you both now know it?"
+            },
+            {
+                question: "What walks on four legs in the morning, two legs in the afternoon, and three legs in the evening?",
+                options: [
+                    "A dog",
+                    "A bird",
+                    "A human",
+                    "A tree"
+                ],
+                correct: 2,
+                explanation: "A human crawls as a baby (four legs), walks as an adult (two legs), and uses a cane in old age (three legs)."
+            },
+            {
+                question: "What do you possess that others use far more than you?",
+                options: [
+                    "Your clothes",
+                    "Your car",
+                    "Your name",
+                    "Your phone"
+                ],
+                correct: 2,
+                explanation: "People refer to your name constantly in conversations, introductions, and discussions about you."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+
+        function renderQuestion() {
+            const neuralGate = document.querySelector('.neural-gate');
+            const quizContainer = neuralGate.querySelector('.quiz-container');
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+
+            quizContainer.innerHTML = `
+                <div class="quiz-question">${currentQuestion.question}</div>
+                <div class="quiz-options">
+                    ${currentQuestion.options.map((option, index) => `
+                        <div class="quiz-option" onclick="checkAnswer(${index})">
+                            ${option}
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="quiz-progress">
+                    Riddle ${currentQuestionIndex + 1} of ${quizQuestions.length}
+                </div>
+            `;
+        }
+
+        function checkAnswer(selectedIndex) {
+            const neuralGate = document.querySelector('.neural-gate');
+            const quizContainer = neuralGate.querySelector('.quiz-container');
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+
+            if (currentQuestionIndex === 0) {
+                // First question is a tutorial
+                const selectedOption = quizContainer.querySelector(`.quiz-option:nth-child(${selectedIndex + 1})`);
+                
+                // Add hint div
+                const hintDiv = document.createElement('div');
+                hintDiv.classList.add('quiz-hint');
+                hintDiv.textContent = currentQuestion.hint;
+                quizContainer.appendChild(hintDiv);
+
+                // Show explanation for all options
+                currentQuestion.options.forEach((option, index) => {
+                    const optionElement = quizContainer.querySelector(`.quiz-option:nth-child(${index + 1})`);
+                    optionElement.innerHTML += `<div class="option-explanation">${
+                        index === 1 ? '✅ CORRECT: ' : '❌ ' 
+                    }${getOptionExplanation(index)}</div>`;
+                });
+
+                // Highlight correct option
+                const correctOption = quizContainer.querySelector(`.quiz-option:nth-child(${currentQuestion.correct + 1})`);
+                correctOption.classList.add('correct');
+
+                // Disable further clicks
+                quizContainer.querySelectorAll('.quiz-option').forEach(option => {
+                    option.onclick = null;
+                });
+
+                // Move to next question automatically after a delay
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    renderQuestion();
+                }, 5000);
+
+                return;
+            }
+
+            // Original answer checking logic for subsequent questions
+            if (selectedIndex === currentQuestion.correct) {
+                correctAnswers++;
+                
+                const selectedOption = quizContainer.querySelector(`.quiz-option:nth-child(${selectedIndex + 1})`);
+                selectedOption.classList.add('correct');
+            } else {
+                const selectedOption = quizContainer.querySelector(`.quiz-option:nth-child(${selectedIndex + 1})`);
+                const correctOption = quizContainer.querySelector(`.quiz-option:nth-child(${currentQuestion.correct + 1})`);
+                
+                selectedOption.classList.add('incorrect');
+                correctOption.classList.add('correct');
+            }
+
+            // Show explanation
+            const explanationDiv = document.createElement('div');
+            explanationDiv.classList.add('quiz-explanation');
+            explanationDiv.textContent = currentQuestion.explanation;
+            quizContainer.appendChild(explanationDiv);
+
+            // Disable further clicks
+            quizContainer.querySelectorAll('.quiz-option').forEach(option => {
+                option.onclick = null;
+            });
+
+            // Move to next question or conclude quiz
+            setTimeout(() => {
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex < quizQuestions.length) {
+                    renderQuestion();
+                } else {
+                    concludeQuiz();
+                }
+            }, 3000);
+        }
+
+        function getOptionExplanation(index) {
+            switch(index) {
+                case 0: return "Money decreases when you give it away";
+                case 1: return "Knowledge multiplies when shared!";
+                case 2: return "Secrets lose their value when spread";
+                case 3: return "Passwords become less secure if shared";
+            }
+        }
+
+        function concludeQuiz() {
+            const neuralGate = document.querySelector('.neural-gate');
+            const quizContainer = neuralGate.querySelector('.quiz-container');
+
+            // Determine if the user passes the quiz
+            const passingScore = Math.ceil(quizQuestions.length * 0.66);
+            
+            if (correctAnswers >= passingScore) {
+                quizContainer.innerHTML = `
+                    <div class="quiz-conclusion success">
+                        <h2>NEURAL GATE: ACCESS GRANTED</h2>
+                        <p>Riddle Comprehension: ${correctAnswers} of ${quizQuestions.length} solved</p>
+                        <p>Proceeding to Cyborg Realm</p>
+                    </div>
+                `;
+                
+                // Redirect after a delay
+                setTimeout(() => {
+                    window.location.href = 'cyborgrealm.html';
+                }, 3000);
+            } else {
+                quizContainer.innerHTML = `
+                    <div class="quiz-conclusion failure">
+                        <h2>NEURAL GATE: ACCESS DENIED</h2>
+                        <p>Insufficient Riddle Comprehension</p>
+                        <p>Redirecting to Restricted Zone</p>
+                    </div>
+                `;
+                
+                // Redirect to child exit page
+                setTimeout(() => {
+                    window.location.href = 'childexit.html';
+                }, 3000);
+            }
+        }
+
+        function startQuiz() {
+            const neuralGate = document.querySelector('.neural-gate');
+            const ageVerification = document.getElementById('age-verification');
+            const quizContainer = neuralGate.querySelector('.quiz-container');
+
+            // Reset quiz state
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+
+            // Hide age verification
+            ageVerification.style.display = 'none';
+            quizContainer.style.display = 'flex';
+
+            // Render first question
+            renderQuestion();
+        }
+
+        function startVerification() {
+            const neuralGate = document.querySelector('.neural-gate');
+            const birthYearInput = document.getElementById('birth-year');
+            const birthYear = birthYearInput.value.trim();
+            
+            // Create scan line
+            const scanLine = document.createElement('div');
+            scanLine.classList.add('neural-scan-line');
+            document.body.appendChild(scanLine);
+
+            // Remove scan line after animation
+            scanLine.addEventListener('animationend', () => {
+                document.body.removeChild(scanLine);
+            });
+            
+            // Enhanced validation
+            if (birthYear === '' || isNaN(birthYear) || 
+                parseInt(birthYear) < 1900 || parseInt(birthYear) > new Date().getFullYear()) {
+                // Visual feedback for invalid input
+                birthYearInput.style.backgroundColor = 'rgba(220,20,60,0.5)';
+                birthYearInput.style.color = 'red';
+                birthYearInput.placeholder = 'INVALID GENESIS CYCLE';
+                
+                // Optional: Add a temporary error message
+                const errorMsg = document.createElement('div');
+                errorMsg.textContent = 'NEURAL VERIFICATION FAILED';
+                errorMsg.style.color = 'red';
+                errorMsg.style.textAlign = 'center';
+                birthYearInput.parentNode.appendChild(errorMsg);
+                
+                // Remove error after 3 seconds
+                setTimeout(() => {
+                    birthYearInput.style.backgroundColor = 'rgba(220,20,60,0.2)';
+                    birthYearInput.style.color = 'inherit';
+                    birthYearInput.placeholder = 'Genesis Cycle';
+                    if (errorMsg.parentNode) {
+                        errorMsg.parentNode.removeChild(errorMsg);
+                    }
+                }, 3000);
+                
+                return;
+            }
+            
+            setTimeout(() => {
+                const currentYear = new Date().getFullYear();
+                const age = currentYear - parseInt(birthYear);
+                
+                if (age >= 18) {
+                    // Success visual feedback
+                    birthYearInput.style.backgroundColor = 'rgba(0,255,0,0.2)';
+                    birthYearInput.style.color = 'green';
+                    
+                    // Start quiz with slight delay
+                    setTimeout(startQuiz, 500);
+                } else {
+                    // Redirect to child exit page
+                    window.location.href = 'childexit.html';
+                }
+            }, 3000);  
+        }
+
+        document.getElementById('age-verification').addEventListener('submit', function(e) {
+            e.preventDefault();
+            startVerification();
+        });
+
+        // Allow submission on Enter key
+        document.getElementById('birth-year').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.closest('form').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

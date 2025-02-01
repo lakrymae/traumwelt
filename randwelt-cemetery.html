@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="necro-cemetery">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randwelt: Cemetery of Lost Souls</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rock+Salt&family=Workbench&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #000000;
+            --necro-green: #00ff00;
+            --necro-purple: #8000ff;
+            --decay-opacity: 0.7;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--necro-green);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .cemetery-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(
+                rgba(0,0,0,0.9), 
+                rgba(0,0,0,0.95)
+            ), url('images/decay-texture.svg');
+            background-size: cover;
+            perspective: 1000px;
+        }
+
+        .tombstone {
+            width: 200px;
+            height: 300px;
+            background: rgba(50,50,50,0.5);
+            margin: 20px;
+            border-radius: 10px;
+            transform: rotateX(60deg);
+            transition: all 0.5s ease;
+            opacity: var(--decay-opacity);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tombstone::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg, 
+                transparent, 
+                var(--necro-purple), 
+                transparent
+            );
+            animation: glitch-animation 2s infinite alternate;
+        }
+
+        @keyframes glitch-animation {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .tombstone:hover {
+            transform: rotateX(45deg) scale(1.1);
+            opacity: 1;
+        }
+
+        .soul-fragment {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--necro-green);
+            border-radius: 50%;
+            animation: soul-drift 3s infinite alternate;
+        }
+
+        @keyframes soul-drift {
+            from { transform: translateY(0) rotate(0deg); }
+            to { transform: translateY(-50px) rotate(360deg); }
+        }
+
+        .cemetery-title {
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin: 50px 0;
+            text-shadow: 0 0 10px var(--necro-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="cemetery-container">
+        <h1 class="cemetery-title">Randwelt: Cemetery of Lost Souls</h1>
+        
+        <div class="tombstone" id="soul-1">
+            <div class="soul-fragment"></div>
+        </div>
+        
+        <div class="tombstone" id="soul-2">
+            <div class="soul-fragment"></div>
+        </div>
+        
+        <div class="tombstone" id="soul-3">
+            <div class="soul-fragment"></div>
+        </div>
+    </div>
+
+    <script>
+        function createSoulFragments() {
+            const tombstones = document.querySelectorAll('.tombstone');
+            tombstones.forEach(tombstone => {
+                const soulFragment = tombstone.querySelector('.soul-fragment');
+                soulFragment.style.left = `${Math.random() * 100}%`;
+                soulFragment.style.animationDelay = `${Math.random() * 2}s`;
+            });
+        }
+
+        createSoulFragments();
+    </script>
+</body>
+</html>

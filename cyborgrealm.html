@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybernetic Realm</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .error-state {
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+        .glitch-text {
+            color: #00ff00;  /* Cyberpunk green text */
+            text-align: center;
+            text-shadow: 
+                0 0 5px rgba(0, 255, 0, 0.5),
+                0 0 10px rgba(0, 255, 0, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .wip-message {
+            color: #ffffff;  /* White work-in-progress message color */
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .flesh-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                url('images/Flesh textures/blood03.png'),
+                url('images/Flesh textures/blood05.png');
+            background-size: 
+                cover, 
+                300% 300%;  /* Increased size for more detail */
+            background-position: 
+                center,
+                0% 0%;
+            background-repeat: repeat;  /* Changed from no-repeat to repeat */
+            background-blend-mode: hard-light;  /* More intense blend mode */
+            opacity: 0.6;  /* Increased from 0.4 to 0.6 */
+            z-index: 5;
+            filter: 
+                contrast(180%)  /* Dramatically increased contrast */
+                grayscale(30%)  /* Reduced grayscale */
+                brightness(0.8)  /* Slightly increased brightness */
+                saturate(150%);  /* Added saturation */
+            animation: 
+                giger-flesh-morph 12s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite,
+                flesh-undulate 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes giger-flesh-morph {
+            0%, 100% { 
+                opacity: 0.5;  /* Increased base opacity */
+                transform: scale(0.9) skew(3deg);
+            }
+            10%, 30%, 50%, 70%, 90% { 
+                opacity: 0.6;
+                transform: scale(1.05) skew(-2deg);
+            }
+            20%, 40%, 60%, 80% { 
+                opacity: 0.7;
+                transform: scale(1.1) skew(2deg);
+            }
+        }
+
+        @keyframes flesh-undulate {
+            0% {
+                background-position: 
+                    center,
+                    0% 0%;
+                border-radius: 0% 60% 0% 60%;
+                transform: scale(1.1);
+            }
+            50% {
+                background-position: 
+                    center,
+                    100% 100%;
+                border-radius: 60% 0% 60% 0%;
+                transform: scale(0.9);
+            }
+            100% {
+                background-position: 
+                    center,
+                    0% 100%;
+                border-radius: 0% 0% 100% 0%;
+                transform: scale(1.05);
+            }
+        }
+
+        .necro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(20,20,20,0.3) 0px,
+                rgba(50,50,50,0.3) 3px,
+                transparent 4px,
+                transparent 6px
+            );
+            opacity: 0.4;
+            z-index: 6;
+            animation: necro-flicker 0.1s infinite alternate;
+            mix-blend-mode: color-burn;
+        }
+
+        @keyframes necro-flicker {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .digital-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0,255,0,0.05) 0px,
+                    rgba(0,255,0,0.1) 1px,
+                    transparent 2px,
+                    transparent 4px
+                );
+            opacity: 0.2;
+            z-index: 7;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            box-shadow: 
+                0 0 200px 100px rgba(20,20,20,0.9) inset,
+                0 0 300px 150px rgba(30,30,30,0.7) inset;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        .header-skull {
+            position: fixed;
+            top: 10%; /* Adjusted to be higher up */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 555px;
+            max-width: 90%;
+            height: 424px;
+            z-index: 10000;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-skull-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: 
+                contrast(120%) 
+                brightness(100%) 
+                saturate(100%);
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .main-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10000;
+            text-align: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .observer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            background-image: 
+                url('images/Flesh textures/damagescreen.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            mix-blend-mode: overlay;
+            animation: 
+                observer-peek 25s ease-in-out infinite,
+                observer-distort 10s infinite alternate;
+        }
+
+        @keyframes observer-peek {
+            0%, 100% { 
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            10%, 30%, 50%, 70%, 90% { 
+                opacity: 0.2;
+                transform: scale(1);
+            }
+            20%, 40%, 60%, 80% { 
+                opacity: 0.3;
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes observer-distort {
+            0% {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+            50% {
+                clip-path: polygon(10% 10%, 90% 0, 100% 90%, 0 100%);
+            }
+            100% {
+                clip-path: polygon(0 20%, 100% 0, 90% 100%, 0 80%);
+            }
+        }
+
+        .giger-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(20,20,20,0.3) 0%,
+                    rgba(40,40,40,0.5) 2px,
+                    transparent 4px,
+                    transparent 8px
+                ),
+                url('images/Flesh textures/blood03.png');
+            background-blend-mode: color-burn;
+            background-size: cover, 200% 200%;
+            opacity: 0.1;
+            z-index: 1;
+            filter: 
+                contrast(120%)
+                brightness(0.7)
+                grayscale(50%);
+            animation: 
+                giger-pulse 15s ease-in-out infinite alternate,
+                organic-shift 20s linear infinite;
+        }
+
+        @keyframes giger-pulse {
+            0% { 
+                opacity: 0.05;
+                transform: scale(0.95) rotate(-0.5deg);
+            }
+            50% { 
+                opacity: 0.15;
+                transform: scale(1.05) rotate(0.5deg);
+            }
+            100% { 
+                opacity: 0.1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes organic-shift {
+            0% {
+                background-position: 
+                    0% 0%,
+                    0% 0%;
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+            50% {
+                background-position: 
+                    100% 100%,
+                    50% 50%;
+                clip-path: polygon(10% 10%, 90% 0, 100% 90%, 0 100%);
+            }
+            100% {
+                background-position: 
+                    0% 100%,
+                    100% 0%;
+                clip-path: polygon(0 20%, 100% 0, 90% 100%, 0 80%);
+            }
+        }
+
+        .biomech-border {
+            position: fixed;
+            top: -50px;
+            left: -50px;
+            right: -50px;
+            bottom: -50px;
+            border: 20px solid transparent;
+            border-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    #1a1a1a 0%,
+                    #2a2a2a 10%,
+                    #1a1a1a 20%
+                ) 1;
+            border-image-slice: 1;
+            box-shadow: 
+                0 0 50px rgba(20,20,20,0.5),
+                inset 0 0 100px rgba(10,10,10,0.3);
+            z-index: 100;
+            pointer-events: none;
+            animation: border-breathe 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes border-breathe {
+            0% {
+                border-width: 15px;
+                opacity: 0.7;
+            }
+            100% {
+                border-width: 25px;
+                opacity: 0.9;
+            }
+        }
+
+        .eye-hint {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(
+                circle at center,
+                rgba(0, 0, 0, 0.5) 0%,
+                rgba(0, 0, 0, 0.1) 50%,
+                transparent 70%
+            );
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 99;
+            animation: eye-pulse 4s infinite alternate;
+        }
+
+        .eye-hint:nth-child(1) { 
+            top: 10%; 
+            left: 15%; 
+            animation-delay: 1s; 
+        }
+        .eye-hint:nth-child(2) { 
+            bottom: 20%; 
+            right: 10%; 
+            animation-delay: 2.5s; 
+        }
+
+        @keyframes eye-pulse {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.5); 
+            }
+            50% { 
+                opacity: 0.2; 
+                transform: scale(1); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(1.5); 
+            }
+        }
+        
+        .nav-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(30,30,30,0.7);
+            color: #c0c0c0;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(50,50,50,0.9);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(100,100,100,0.3);
+        }
+        #sound-activation {
+            position: fixed;
+            top: calc(60% + 66px);
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10001;
+            background-color: rgba(0,255,0,0.2);
+            color: #00ff00;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* Star Wars hyperspace transition */
+        @keyframes hyperspace-transition {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(10) rotate(360deg);
+                opacity: 0;
+                filter: brightness(0);
+            }
+            100% {
+                transform: scale(0) rotate(720deg);
+                opacity: 0;
+                filter: brightness(0);
+            }
+        }
+
+        .hyperspace-exit {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            z-index: 20000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .hyperspace-exit.active {
+            animation: hyperspace-transition 1.5s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+        }
+
+        /* Giger-inspired biomechanical design elements */
+        /* Ensure other layers are behind the skull */
+        .flesh-texture, 
+        .necro-overlay, 
+        .digital-lines, 
+        .vignette,
+        .observer-overlay {
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="main-page">
+    <div class="flesh-texture"></div>
+    <div class="necro-overlay"></div>
+    <div class="digital-lines"></div>
+    <div class="vignette"></div>
+    <div class="main-content">
+        <h1 class="glitch-text" data-text="Cybernetic Realm">Cybernetic Realm</h1>
+        <div class="wip-message">
+            <p class="glitch-text" data-text="SYSTEM INITIALIZATION: INCOMPLETE">
+                SYSTEM INITIALIZATION: <span class="error-state">INCOMPLETE</span>
+            </p>
+            <p>
+                Neural pathways <span class="error-state">decaying</span>...<br>
+                Quantum state: <span class="error-state">TERMINAL</span><br>
+                Biomechanical integration: [NECROTIC]<br>
+                Temporal synchronization: <span class="error-state">COLLAPSING</span>
+            </p>
+            <p>
+                <span class="glitch-text" data-text="RECONSTRUCTION IN PROGRESS">
+                    RECONSTRUCTION IN <span class="error-state">DEGRADATION</span>
+                </span>
+            </p>
+        </div>
+    </div>
+    <div class="header-skull">
+        <img src="images/skull.png" alt="traumwelt guardian skull" class="header-skull-image">
+    </div>
+    <script>
+        function violentEscape() {
+            // Instant, violent fade-out effect
+            document.body.style.transition = 'opacity 0.1s ease-in-out';
+            document.body.style.opacity = '0';
+            
+            // Immediate redirect after minimal fade
+            setTimeout(() => {
+                window.location.href = 'https://www.google.com';
+            }, 50);
+        }
+    </script>
+    <div id="sound-activation">
+        <a id="escape-link" href="javascript:void(0);" onclick="violentEscape()" style="
+            color: #00ff00;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        ">
+            <span style="
+                font-family: 'Courier New', monospace;
+                font-weight: bold;
+                letter-spacing: -1px;
+                text-transform: uppercase;
+            ">D3K0NStRUKT</span>
+            <span style="
+                font-family: 'Arial', sans-serif;
+                color: #00aa00;
+                text-transform: lowercase;
+            "> traumwelt</span>
+            <span style="
+                font-family: 'Courier New', monospace;
+                font-weight: bold;
+                letter-spacing: -1px;
+                text-transform: uppercase;
+            "> : Reboot 2 STAND.@rt</span>
+        </a>
+    </div>
+    <div id="hyperspace-exit" class="hyperspace-exit"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const escapeLink = document.getElementById('escape-link');
+            const hyperspaceExit = document.getElementById('hyperspace-exit');
+
+            escapeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Trigger hyperspace transition
+                hyperspaceExit.classList.add('active');
+
+                // Wait for animation to complete before navigating
+                setTimeout(() => {
+                    window.location.href = 'https://www.google.com';
+                }, 1500);  // Match the animation duration
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sounds = {
+                heartbeat1: new Audio('sounds/heartbeat_fast_0.wav'),
+                heartbeat2: new Audio('sounds/heartbeat_fast_0.wav'),
+                heartbeat3: new Audio('sounds/heartbeat_fast_0.wav'),
+                heartbeat4: new Audio('sounds/heartbeat_fast_0.wav'),
+                heartbeat5: new Audio('sounds/heartbeat_fast_0.wav'),
+                keyJiggle: new Audio('sounds/Key Jiggle.wav')
+            };
+
+            // Configure multiple heartbeats with maximum volume and very slow rhythm
+            Object.keys(sounds).filter(key => key.startsWith('heartbeat')).forEach((key, index) => {
+                const sound = sounds[key];
+                
+                // Even slower playback with maximum volume
+                sound.playbackRate = 0.25 + (index * 0.05);  // Extremely slow beat
+                sound.volume = 2.0 - (index * 0.3);  // Amplified volume beyond 1.0
+                sound.loop = true;
+            });
+
+            // Function to attempt playing sounds
+            function tryPlaySounds() {
+                Object.keys(sounds).filter(key => key.startsWith('heartbeat')).forEach(key => {
+                    sounds[key].play().catch(e => {
+                        console.error(`${key} play error:`, e);
+                    });
+                });
+            }
+
+            // Attempt to play sounds on multiple events
+            const playAttempts = [
+                () => document.body.addEventListener('click', tryPlaySounds, { once: true }),
+                () => document.addEventListener('mousemove', tryPlaySounds, { once: true }),
+                () => window.addEventListener('scroll', tryPlaySounds, { once: true })
+            ];
+
+            // Try different methods to bypass autoplay restrictions
+            playAttempts.forEach(attempt => attempt());
+
+            // Fallback random sound events
+            function triggerRandomSound() {
+                const soundKeys = Object.keys(sounds).filter(key => !key.startsWith('heartbeat'));
+                if (soundKeys.length > 0) {
+                    const randomSoundKey = soundKeys[Math.floor(Math.random() * soundKeys.length)];
+                    
+                    const sound = sounds[randomSoundKey];
+                    sound.volume = 0.5;
+                    sound.play().catch(e => console.log('Random sound play error:', e));
+                }
+            }
+
+            // Trigger random sounds at intervals
+            const soundInterval = setInterval(triggerRandomSound, 15000);  // Every 15 seconds
+
+            // Optional: Add interaction to trigger sounds
+            document.addEventListener('mousemove', () => {
+                if (Math.random() < 0.02) {  // 2% chance on mouse move
+                    triggerRandomSound();
+                }
+            });
+
+            // Warn about potential sound issues
+            console.warn('Heartbeat sounds may require user interaction to play due to browser restrictions.');
+        });
+    </script>
+    <script>
+        // Prevent all navigation attempts
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                console.log('Navigation blocked: Site under construction');
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

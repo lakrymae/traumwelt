@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XpereimentationZ - Traumwelt Border Exploration</title>
+    <style>
+        :root {
+            --border-primary: #1a1a1a;
+            --border-secondary: #2a2a2a;
+            --text-primary: #c0c0c0;
+            --bg-primary: #0a0a0a;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes flesh-pulse {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                opacity: 0.6;
+                transform: scale(1.05) rotate(5deg);
+            }
+        }
+
+        @keyframes flesh-morph {
+            0%, 100% { 
+                clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+            }
+            25% { 
+                clip-path: polygon(10% 10%, 90% 0%, 100% 90%, 0% 100%);
+            }
+            50% { 
+                clip-path: polygon(5% 5%, 95% 5%, 100% 95%, 0% 95%);
+            }
+            75% { 
+                clip-path: polygon(0% 0%, 100% 10%, 90% 100%, 10% 90%);
+            }
+        }
+
+        @keyframes texture-drift-1 {
+            0% { 
+                transform: translate(0, 0) rotate(0deg);
+                background-position: 0% 0%;
+            }
+            50% { 
+                transform: translate(5%, 5%) rotate(2deg);
+                background-position: 50% 50%;
+            }
+            100% { 
+                transform: translate(-5%, -5%) rotate(-2deg);
+                background-position: 100% 100%;
+            }
+        }
+
+        @keyframes texture-drift-2 {
+            0% { 
+                transform: translate(0, 0) rotate(0deg);
+                background-position: 100% 100%;
+            }
+            50% { 
+                transform: translate(-5%, 5%) rotate(-2deg);
+                background-position: 50% 50%;
+            }
+            100% { 
+                transform: translate(5%, -5%) rotate(2deg);
+                background-position: 0% 0%;
+            }
+        }
+
+        @keyframes vignette-pulse {
+            0%, 100% { 
+                opacity: 0.7;
+                box-shadow: 
+                    inset 0 0 50px 50px rgba(0,0,0,0.6),
+                    inset 0 0 100px 100px rgba(0,0,0,0.4);
+            }
+            50% { 
+                opacity: 0.9;
+                box-shadow: 
+                    inset 0 0 70px 70px rgba(0,0,0,0.7),
+                    inset 0 0 120px 120px rgba(0,0,0,0.5);
+            }
+        }
+
+        .flesh-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            z-index: -2;
+        }
+
+        .flesh-layer-1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/Flesh textures/blood03.png');
+            background-size: 500% 500%;
+            background-position: center;
+            mix-blend-mode: overlay;
+            opacity: 0.5;
+            animation: 
+                texture-drift-1 30s ease-in-out infinite alternate,
+                flesh-morph 15s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
+            filter: contrast(150%) brightness(80%) hue-rotate(340deg);
+        }
+
+        .flesh-layer-2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/Flesh textures/blood05.png');
+            background-size: 600% 600%;
+            background-position: center;
+            mix-blend-mode: color-dodge;
+            opacity: 0.4;
+            animation: 
+                texture-drift-2 25s ease-in-out infinite alternate,
+                flesh-morph 18s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate reverse;
+            filter: contrast(120%) brightness(90%) hue-rotate(350deg);
+        }
+
+        .flesh-layer-3 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/Flesh textures/damagescreen.png');
+            background-size: 700% 700%;
+            background-position: center;
+            mix-blend-mode: color;
+            opacity: 0.5;
+            animation: 
+                texture-drift-1 30s ease-in-out infinite alternate,
+                flesh-morph 20s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate reverse;
+            filter: contrast(180%) brightness(60%) hue-rotate(330deg);
+        }
+
+        .flesh-vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            box-shadow: 
+                inset 0 0 50px 50px rgba(0,0,0,0.6),
+                inset 0 0 100px 100px rgba(0,0,0,0.4);
+            animation: vignette-pulse 15s ease-in-out infinite alternate;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            width: 300px;
+            min-height: 200px;
+            border: 20px solid transparent;
+            box-sizing: border-box;
+            margin: 20px;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+
+        /* Border variants with green screen and image overlay */
+        .border-variant-1 {
+            border-image: 
+                linear-gradient(to right, 
+                    rgba(0,255,0,0) 0%, 
+                    rgba(0,255,0,0) 100%), 
+                url('images/biomechanical borders/biomb-02.png') 30 stretch;
+            border-image-slice: 30 fill;
+        }
+
+        .border-variant-2 {
+            border-image: 
+                linear-gradient(to right, 
+                    rgba(0,255,0,0) 0%, 
+                    rgba(0,255,0,0) 100%), 
+                url('images/biomechanical borders/biomb-03.png') 20 round;
+            border-image-slice: 20 fill;
+        }
+
+        .border-variant-3 {
+            border-image: 
+                linear-gradient(to right, 
+                    rgba(0,255,0,0) 0%, 
+                    rgba(0,255,0,0) 100%), 
+                url('images/biomechanical borders/biomb-04.png') 40 repeat;
+            border-image-slice: 40 fill;
+        }
+
+        .border-variant-4 {
+            border-image: 
+                linear-gradient(to right, 
+                    rgba(0,255,0,0) 0%, 
+                    rgba(0,255,0,0) 100%), 
+                url('images/biomechanical borders/biomb-01.png') 25 round;
+            border-image-slice: 25 fill;
+        }
+
+        .border-variant-5 {
+            border-image: 
+                linear-gradient(to right, 
+                    rgba(0,255,0,0) 0%, 
+                    rgba(0,255,0,0) 100%), 
+                url('images/biomechanical borders/biomb-05.png') 30 stretch;
+            border-image-slice: 30 fill;
+        }
+
+        .border-variant-6 {
+            border-image: 
+                linear-gradient(to right, 
+                    rgba(0,255,0,0) 0%, 
+                    rgba(0,255,0,0) 100%), 
+                url('images/biomechanical borders/biomb-06.png') 25 round;
+            border-image-slice: 25 fill;
+        }
+
+        /* Rotation for each border variant */
+        .border-variant-1::before,
+        .border-variant-2::before,
+        .border-variant-3::before,
+        .border-variant-4::before,
+        .border-variant-5::before,
+        .border-variant-6::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border: 20px solid transparent;
+            z-index: -1;
+            opacity: 0.2;
+            mix-blend-mode: color-burn;
+            background-size: 300% 300%;
+            background-position: center;
+            filter: contrast(150%) brightness(80%);
+            transition: all 0.3s ease;
+        }
+
+        .border-variant-1::before {
+            border-image: url('images/biomechanical borders/biomb-02.png') 30 stretch;
+            background-image: url('images/Flesh textures/blood03.png');
+            transform: rotate(90deg);
+        }
+
+        .border-variant-2::before {
+            border-image: url('images/biomechanical borders/biomb-03.png') 20 round;
+            background-image: url('images/Flesh textures/blood05.png');
+            transform: rotate(180deg);
+        }
+
+        .border-variant-3::before {
+            border-image: url('images/biomechanical borders/biomb-04.png') 40 repeat;
+            background-image: url('images/Flesh textures/damagescreen.png');
+            transform: rotate(270deg);
+        }
+
+        .border-variant-4::before {
+            border-image: url('images/biomechanical borders/biomb-01.png') 25 round;
+            background-image: url('images/Flesh textures/blood01.png');
+            transform: rotate(360deg);
+        }
+
+        .border-variant-5::before {
+            border-image: url('images/biomechanical borders/biomb-05.png') 30 stretch;
+            background-image: url('images/Flesh textures/blood02.png');
+            transform: rotate(90deg);
+        }
+
+        .border-variant-6::before {
+            border-image: url('images/biomechanical borders/biomb-06.png') 25 round;
+            background-image: url('images/Flesh textures/blood04.png');
+            transform: rotate(180deg);
+        }
+
+        .container-content {
+            position: relative;
+            z-index: 10;
+            color: #c0c0c0;
+            padding: 15px;
+        }
+
+        .experimental-note {
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+
+        .nav-links {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .two-frame-border {
+            position: relative;
+            width: 100%;
+            height: 600px;
+        }
+
+        .two-frame-border .container {
+            position: absolute;
+            background-color: rgba(50,50,50,0.3);
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .two-frame-border .container:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            width: 250px;
+            height: 200px;
+            border: 15px solid transparent;
+            border-image: url('images/biomechanical borders/Bmblood01.png') 15 stretch;
+            border-image-slice: 15 fill;
+        }
+
+        .two-frame-border .container:nth-child(2) {
+            bottom: 10%;
+            right: 10%;
+            width: 250px;
+            height: 200px;
+            border: 15px solid transparent;
+            border-image: url('images/biomechanical borders/Bmblood01.png') 15 stretch;
+            border-image-slice: 15 fill;
+        }
+
+        .two-frame-border .container-content {
+            padding: 15px;
+            color: #c0c0c0;
+            font-size: 0.9em;
+        }
+
+        .two-frame-border .container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(139,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="flesh-background">
+        <div class="flesh-layer-1"></div>
+        <div class="flesh-layer-2"></div>
+        <div class="flesh-layer-3"></div>
+        <div class="flesh-vignette"></div>
+    </div>
+    <div class="nav-links">
+        <a href="cyborgrealm.html" class="nav-link">Cyborg Realm</a>
+        <a href="necrotechnology.html" class="nav-link">Necrotechnology</a>
+    </div>
+    <div class="two-frame-border">
+        <div class="container">
+            <div class="container-content">
+                <h2>Container 1</h2>
+                <p>Biomechanical border with stretch adaptation</p>
+            </div>
+        </div>
+        <div class="container">
+            <div class="container-content">
+                <h2>Container 2</h2>
+                <p>Biomechanical border with rounded image repeat</p>
+            </div>
+        </div>
+    </div>
+    <div class="container border-variant-1">
+        <div class="container-content">
+            <h2>Border Variant 1</h2>
+            <p>Biomechanical border with stretch adaptation</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-02.png</div>
+    </div>
+
+    <div class="container border-variant-2">
+        <div class="container-content">
+            <h2>Border Variant 2</h2>
+            <p>Biomechanical border with rounded image repeat</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-03.png</div>
+    </div>
+
+    <div class="container border-variant-3">
+        <div class="container-content">
+            <h2>Border Variant 3</h2>
+            <p>Biomechanical border with repeated image pattern</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-04.png</div>
+    </div>
+
+    <div class="container border-variant-4">
+        <div class="container-content">
+            <h2>Border Variant 4</h2>
+            <p>Biomechanical border with rounded image repeat</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-01.png</div>
+    </div>
+
+    <div class="container border-variant-4">
+        <div class="container-content">
+            <h2>Border Variant 4</h2>
+            <p>Biomechanical border with rounded image repeat</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-01.png</div>
+    </div>
+
+    <div class="container border-variant-5">
+        <div class="container-content">
+            <h2>Border Variant 5</h2>
+            <p>Biomechanical border with stretch adaptation</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-05.png</div>
+    </div>
+
+    <div class="container border-variant-6">
+        <div class="container-content">
+            <h2>Border Variant 6</h2>
+            <p>Biomechanical border with rounded image repeat</p>
+        </div>
+        <div class="experimental-note">Border Image: biomb-06.png</div>
+    </div>
+
+    <script>
+        // Future interactive experiments can be added here
+        document.querySelectorAll('.container').forEach(container => {
+            container.addEventListener('mouseenter', () => {
+                container.style.opacity = '0.9';
+            });
+            container.addEventListener('mouseleave', () => {
+                container.style.opacity = '1';
+            });
+        });
+    </script>
+</body>
+</html>

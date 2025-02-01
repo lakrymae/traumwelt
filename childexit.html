@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyberpunk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Childhood Reflection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Workbench&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #000011;
+            --text-color: #00ffff;
+            --primary-color: #0a0a2a;
+            --glitch-color-1: #ff00de;
+            --glitch-color-2: #0fa;
+            --halo-color: rgba(0, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .poem-container {
+            background-color: rgba(10, 10, 42, 0.8);
+            border: 2px solid var(--text-color);
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 800px;
+            box-shadow: 
+                0 0 10px var(--halo-color),
+                0 0 20px rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poem-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 255, 0.03) 0,
+                rgba(0, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            animation: scan 7.5s linear 0s infinite;
+            z-index: 1;
+        }
+
+        @keyframes scan {
+            0% { transform: translate(0, 0); }
+            35% { transform: translate(-5%, 0); }
+            100% { transform: translate(0, -100%); }
+        }
+
+        .poem-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Workbench', cursive;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--glitch-color-1);
+            position: relative;
+        }
+
+        .poem-text {
+            white-space: pre-wrap;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .poem-author {
+            text-align: right;
+            margin-top: 20px;
+            font-style: italic;
+            color: var(--glitch-color-2);
+        }
+
+        .continue-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            background-color: var(--text-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            background-color: var(--glitch-color-1);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="poem-container">
+        <h1 class="poem-title">Childhood Memories</h1>
+        <div class="poem-text">It would be good to give much thought, before
+you try to find words for something so lost,
+for those long childhood afternoons you knew
+that vanished so completely -and why?
+
+We're still reminded-: sometimes by a rain,
+but we can no longer say what it means;
+life was never again so filled with meeting,
+with reunion and with passing on
+
+as back then, when nothing happened to us
+except what happens to things and creatures:
+we lived their world as something human,
+and became filled to the brim with figures.
+
+And became as lonely as a sheperd
+and as overburdened by vast distances,
+and summoned and stirred as from far away,
+and slowly, like a long new thread,
+introduced into that picture-sequence
+where now having to go on bewilders us.</div>
+        <div class="poem-author">- Rainer Maria Rilke</div>
+        <button class="continue-btn" onclick="window.location.href='https://www.youtubekids.com/?hl=fr'">Proceed with Protection of the Naive</button>
+    </div>
+</body>
+</html>

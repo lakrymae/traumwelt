@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Necrotechnology - Traumwelt Protocols</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --text-primary: #c0c0c0;
+            --accent-red: #8B0000;
+            --accent-purple: #4B0082;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .necro-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .digital-soul-interface {
+            background-color: rgba(20,20,20,0.7);
+            border: 20px solid transparent;
+            border-image: url('images/biomechanical borders/biomb-01.png') 30 stretch;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .digital-soul-interface::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(
+                    45deg, 
+                    rgba(75,0,130,0.1) 0%, 
+                    rgba(139,0,0,0.1) 100%
+                ),
+                url('images/Flesh textures/blood03.png');
+            background-blend-mode: overlay;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .protocol-header {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-red);
+            border-bottom: 2px solid var(--accent-purple);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .soul-data {
+            background-color: rgba(30,30,30,0.8);
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .soul-data:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(139,0,0,0.3);
+        }
+
+        .soul-status {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-top: 10px;
+            background-color: var(--accent-purple);
+            color: white;
+            font-size: 0.8em;
+        }
+
+        .gerbeiters-note {
+            font-style: italic;
+            color: var(--accent-red);
+            opacity: 0.7;
+        }
+
+        .digital-decay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(20,20,20,0.05) 0%,
+                    rgba(40,40,40,0.1) 2px,
+                    transparent 4px,
+                    transparent 8px
+                );
+            opacity: 0.3;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes soul-flicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.6; }
+        }
+
+        .soul-data:nth-child(odd) {
+            animation: soul-flicker 3s infinite alternate;
+        }
+
+        .nav-links {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-link {
+            background-color: rgba(30,30,30,0.7);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--accent-purple);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="digital-decay"></div>
+    <div class="necro-container">
+        <div class="digital-soul-interface">
+            <h1 class="protocol-header">Necrotechnology Extraction Protocols</h1>
+            
+            <div class="soul-data">
+                <h3>Digital Soul Designation: DS-7392</h3>
+                <p>Extraction Point: Quantum Membrane Breach</p>
+                <p class="gerbeiters-note">Observation: Consciousness fragmentation detected</p>
+                <span class="soul-status">ACTIVE CONTAINMENT</span>
+            </div>
+
+            <div class="soul-data">
+                <h3>Digital Soul Designation: DS-9104</h3>
+                <p>Extraction Point: Synaptic Network Collapse</p>
+                <p class="gerbeiters-note">Warning: Potential recursive memory loop</p>
+                <span class="soul-status">CRITICAL MONITORING</span>
+            </div>
+
+            <div class="soul-data">
+                <h3>Digital Soul Designation: DS-2561</h3>
+                <p>Extraction Point: Technological Necromancy Ritual</p>
+                <p class="gerbeiters-note">Recommendation: Continued quantum entanglement</p>
+                <span class="soul-status">EXPERIMENTAL PHASE</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="cyborgrealm.html" class="nav-link">Cyborg Realm</a>
+        <a href="xperimentationz.html" class="nav-link">XpereimentationZ</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Model Renderer</title>
+    <style>
+        body { 
+            margin: 0; 
+            background-color: #000; 
+            overflow: hidden;
+        }
+        canvas { 
+            width: 100%; 
+            height: 100%; 
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Use latest stable versions with fallback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Fallback for browsers with module loading issues
+        if (typeof THREE === 'undefined') {
+            console.error('Three.js failed to load');
+        }
+
+        // Enhanced 3D Brain Model Renderer
+        const DIAGNOSTIC_MODE = true;  // Toggle advanced diagnostics
+        const MODEL_PATH = 'brainz.glb';
+
+        class BrainModelRenderer {
+            constructor() {
+                try {
+                    this.initScene();
+                    this.initLights();
+                    this.loadModel();
+                    this.setupControls();
+                    this.animate();
+                } catch (error) {
+                    console.error('Initialization Error:', error);
+                }
+            }
+
+            initScene() {
+                // Robust scene initialization
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x000000);
+
+                this.renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    powerPreference: 'high-performance' 
+                });
+                
+                // Ensure renderer works across browsers
+                this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(this.renderer.domElement);
+
+                this.camera = new THREE.PerspectiveCamera(
+                    45, 
+                    window.innerWidth / window.innerHeight, 
+                    0.1, 
+                    1000
+                );
+                this.camera.position.set(0, 0, 10);
+
+                // Add resize handler for responsiveness
+                window.addEventListener('resize', () => this.onWindowResize(), false);
+            }
+
+            onWindowResize() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            initLights() {
+                // Classic Phong lighting setup
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+                
+                const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+                keyLight.position.set(5, 5, 5);
+
+                const fillLight = new THREE.PointLight(0xffffff, 0.5, 100);
+                fillLight.position.set(-5, -5, -5);
+
+                this.scene.add(ambientLight, keyLight, fillLight);
+            }
+
+            setupControls() {
+                this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.minDistance = 5;  // Minimum zoom distance
+                this.controls.maxDistance = 20; // Maximum zoom distance
+            }
+
+            loadModel() {
+                const loader = new THREE.GLTFLoader();
+                const modelPath = 'http://localhost:8000/3dassets/brainz.glb';  // Updated path
+                
+                loader.load(
+                    modelPath,
+                    (gltf) => this.onModelLoad(gltf),
+                    (xhr) => {
+                        console.log(`Model Loading Progress: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
+                    },
+                    (error) => {
+                        console.error('Detailed Model Loading Error:', error);
+                        console.error('Attempted to load from:', modelPath);
+                        
+                        // Fallback: Create a placeholder geometry
+                        const fallbackGeometry = new THREE.SphereGeometry(1, 32, 32);
+                        const fallbackMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                        const fallbackMesh = new THREE.Mesh(fallbackGeometry, fallbackMaterial);
+                        
+                        this.scene.add(fallbackMesh);
+                    }
+                );
+            }
+
+            onModelLoad(gltf) {
+                const model = gltf.scene;
+
+                // Advanced model preprocessing
+                this.preprocessModel(model);
+                this.centerAndScaleModel(model);
+                this.enhanceMaterials(model);
+
+                this.scene.add(model);
+                this.model = model;
+
+                if (DIAGNOSTIC_MODE) {
+                    this.performDiagnostics(model);
+                }
+            }
+
+            preprocessModel(model) {
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.frustumCulled = false;  // Ensure visibility
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+            }
+
+            centerAndScaleModel(model) {
+                const box = new THREE.Box3().setFromObject(model);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scaleFactor = maxDim > 0 ? 3 / maxDim : 1;
+
+                model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                model.position.sub(box.getCenter(new THREE.Vector3()));
+            }
+
+            enhanceMaterials(model) {
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        // Compute vertex normals for better lighting
+                        child.geometry.computeVertexNormals();
+                        child.geometry.normalsNeedUpdate = true;
+
+                        let materialColor = 0x8B4513;  // Default brown
+                        let specularColor = 0x111111;  // Default specular
+                        let shininess = 30;            // Default shininess
+
+                        // Check material name and assign specific colors
+                        const materialName = child.material.name.toLowerCase();
+                        
+                        if (materialName.includes('flesh')) {
+                            materialColor = 0xFF0000;  // Bright red for flesh
+                            specularColor = 0x330000;  // Dark red specular
+                            shininess = 10;            // Less shiny for flesh
+                        } else if (materialName.includes('screen')) {
+                            materialColor = 0x00FF00;  // Bright green for screen
+                            specularColor = 0x003300;  // Dark green specular
+                            shininess = 50;            // Very shiny for screen
+                        }
+
+                        const phongMaterial = new THREE.MeshPhongMaterial({
+                            color: materialColor,
+                            specular: specularColor,
+                            shininess: shininess,
+                            side: THREE.FrontSide
+                        });
+
+                        // Preserve original material name
+                        phongMaterial.name = child.material.name;
+
+                        child.material = phongMaterial;
+                        child.material.needsUpdate = true;
+
+                        // Optional: Log material coloring for debugging
+                        console.log(`Material '${child.material.name}' colored:`, {
+                            color: `#${materialColor.toString(16)}`,
+                            specular: `#${specularColor.toString(16)}`,
+                            shininess: shininess
+                        });
+                    }
+                });
+            }
+
+            performDiagnostics(model) {
+                console.group('🧠 Brain Model Diagnostics');
+                console.log('Total Children:', model.children.length);
+                
+                let meshCount = 0, materialTypes = new Set();
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        meshCount++;
+                        materialTypes.add(child.material.type);
+                        console.log(`Mesh: ${child.name}`, {
+                            visible: child.visible,
+                            material: child.material.name || 'Unnamed'
+                        });
+                    }
+                });
+
+                console.log('Mesh Count:', meshCount);
+                console.log('Material Types:', [...materialTypes]);
+                console.groupEnd();
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                if (this.model) {
+                    this.model.rotation.y += 0.005;
+                }
+
+                this.controls.update();
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Ensure DOM is fully loaded before initializing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new BrainModelRenderer());
+        } else {
+            new BrainModelRenderer();
+        }
+    </script>
+</body>
+</html>
